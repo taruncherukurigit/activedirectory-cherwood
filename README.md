@@ -1,6 +1,10 @@
 # Cherwood Foundation — Active Directory / 802.1X / SSL-VPN
 
+![Status](https://img.shields.io/badge/status-live-4a9d78) ![Stack](https://img.shields.io/badge/stack-AD%20%7C%20NPS%2FRADIUS%20%7C%20802.1X%20%7C%20FortiGate-b8933d) ![License](https://img.shields.io/badge/license-view--only-6b655a)
+
 **Client engagement delivered by Cherwood Network Solutions** — Active Directory identity infrastructure, 802.1X wireless authentication, and RADIUS-backed SSL-VPN, built for Cherwood Foundation, a nonprofit client running on a shared Wi-Fi password and unmanaged local VPN accounts.
+
+**At a glance:** one AD identity now gates Wi-Fi, VPN, and every domain-joined machine. Two independent client platforms (Cisco AP, FortiGate) authenticate against the same directory over RADIUS. Every claim below is backed by a server-side log screenshot, not a description of what should happen — see [Verification](#verification).
 
 > 🌐 Live project site: [foundation.tarunc.com](https://foundation.tarunc.com)
 > 🔁 GitHub Pages mirror: [taruncherukurigit.github.io/activedirectory-cherwood](https://taruncherukurigit.github.io/activedirectory-cherwood/)
@@ -67,6 +71,48 @@ Every piece above is independently tested for both the **valid and invalid case*
 | GPO applied to client | Confirmed | `gpresult /r /scope:computer` |
 
 Full screenshots for each row are in [`screenshots/`](screenshots/) and referenced inline in the build doc.
+
+## Screenshots
+
+**NPS Event 6272 — Wi-Fi login granted.** Server-side Security log entry, not a client-side "connected" message — `Account Name: jsmith`, `Account Domain: FOUNDATION`, authenticated against the domain controller's own audit log.
+
+![NPS Wi-Fi login granted](screenshots/nps-6272-wifi-granted.png)
+
+**NPS Event 6273 — Wi-Fi login denied, Reason Code 16.** The negative case, proven the same way as the positive one — an invalid login is rejected and logged with a real, specific reason, not silently dropped.
+
+![NPS Wi-Fi login denied](screenshots/nps-6273-wifi-denied.png)
+
+**SSL-VPN — live tunnel, authenticated via RADIUS.** FortiClient connected state showing a real assigned tunnel IP for `jsmith`, authenticated against the same Active Directory identity as the Wi-Fi login above — not a separate local VPN account.
+
+![FortiClient VPN connected](screenshots/forticlient-vpn-connected.png)
+
+**Group Policy — enforcement proven behaviorally.** Active Directory rejecting a password that fails the enforced minimum-length policy — proof the GPO isn't just configured, it's actively enforced.
+
+![GPO password policy rejected](screenshots/gpo-password-rejected.png)
+
+**`gpresult` — GPO confirmed applied to the client.** `gpresult /r /scope:computer` on `FOUNDATION-CLIENT01`, showing `Default Domain Policy` under Applied Group Policy Objects — the structural confirmation to go with the behavioral proof above.
+
+![gpresult showing GPO applied](screenshots/gpresult-gpo-applied.png)
+
+**NPS — both Network Policies, independently scoped.** `Cherwood-Foundation-WiFi-Access` and `Cherwood-Foundation-VPN-Access`, both enabled, both granting access — the fix for Bug #6 below, visible directly in the NPS console.
+
+![NPS Network Policies list](screenshots/nps-network-policies.png)
+
+**RADIUS — direct CLI authentication test, bypassing the VPN portal.** `diagnose test authserver radius` run straight from the FortiGate CLI against NPS, returning `succeeded` — the diagnostic technique that isolated Bug #8 below from anything in the SSL-VPN portal layer itself.
+
+![FortiGate RADIUS CLI test](screenshots/radius-secret-cli-test.png)
+
+**802.1X — certificate trust prompt, mid-handshake.** The exact moment referenced in Bug #7 below — iOS requires this explicit trust confirmation before an otherwise fully-configured PEAP/802.1X connection can complete.
+
+![iOS certificate trust prompt](screenshots/ios-cert-trust-prompt.png)
+
+**Active Directory — real OU structure.** `Staff`, `Volunteers`, `Programs` — a deliberate organizational structure, not a flat default-container directory.
+
+![AD OU structure](screenshots/ad-ou-structure.png)
+
+**Domain controller — promotion complete.** `FOUNDATION-DC01` fully configured as a domain controller for `foundation.cherwood.local`.
+
+![DC promotion complete](screenshots/dc-promotion-complete.png)
 
 ## The real engineering story
 
