@@ -75,10 +75,10 @@
   .verdict { display: inline-block; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 2px; }
   .verdict.granted { color: var(--green); background: rgba(74,157,120,0.12); border: 1px solid var(--green); }
   .verdict.denied { color: var(--red); background: rgba(192,92,74,0.12); border: 1px solid var(--red); }
+  .verdict.neutral { color: var(--gold); background: rgba(184,147,61,0.12); border: 1px solid var(--gold); }
 
   .evidence-block { background: var(--panel); border: 1px solid var(--line); border-radius: 3px; margin-top: 18px; overflow: hidden; }
-  .evidence-block .cap { font-family: 'Courier New', monospace; font-size: 12px; padding: 12px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
-  .evidence-block .shot { padding: 44px 18px; text-align: center; font-family: 'Courier New', monospace; font-size: 12px; color: var(--text-soft); background: repeating-linear-gradient(135deg, #131826, #131826 12px, #151b29 12px, #151b29 24px); }
+  .evidence-block .cap { font-family: 'Courier New', monospace; font-size: 12px; padding: 12px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
   .evidence-block img { width: 100%; display: block; }
 
   .bug { border-top: 1px solid var(--line); padding: 24px 0; }
@@ -91,6 +91,12 @@
   .stack-list { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
   .stack-list div { font-family: 'Courier New', monospace; font-size: 13px; color: var(--text-soft); background: var(--panel); border: 1px solid var(--line); padding: 8px 14px; border-radius: 3px; }
   .stack-list div span { color: var(--gold); }
+
+  .shot-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+  .shot-pair figure { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+  .shot-pair img { width: 100%; display: block; }
+  .shot-pair figcaption { font-family: 'Courier New', monospace; font-size: 11px; color: var(--text-soft); padding: 10px 14px; border-top: 1px solid var(--line); }
+  @media (max-width: 640px) { .shot-pair { grid-template-columns: 1fr; } }
 
   .related { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 18px; }
   .related a { font-family: 'Courier New', monospace; font-size: 13px; border: 1px solid var(--gold-dim); padding: 9px 16px; border-radius: 3px; color: var(--gold); }
@@ -159,6 +165,17 @@
     <div class="section-note">THE ACTUAL WORK</div>
     <p>A new Active Directory domain, <code>foundation.cherwood.local</code>, with AD-integrated DNS and a proper OU structure — Staff, Volunteers, Programs. An Enterprise Certificate Authority issuing the certificate 802.1X requires. NPS — Microsoft's RADIUS server — standing between the directory and two entirely different client devices: a Cisco access point, and a FortiGate firewall, each with its own dedicated policy.</p>
     <p>Both were converted from the client's old approach — a shared password on the AP, local accounts on the FortiGate — to checking against the one directory. A domain-joined client machine and a real, enforced Group Policy close out the proof: this isn't just configured, it's used.</p>
+
+    <div class="shot-pair">
+      <figure>
+        <img src="screenshots/ad-ou-structure.png" alt="Active Directory Users and Computers showing Staff, Volunteers, and Programs OUs">
+        <figcaption>AD Users and Computers — Staff / Volunteers / Programs OU structure</figcaption>
+      </figure>
+      <figure>
+        <img src="screenshots/dc-promotion-complete.png" alt="Active Directory Domain Services promotion completion dialog">
+        <figcaption>AD DS promotion — domain controller fully configured</figcaption>
+      </figure>
+    </div>
   </section>
 
   <section>
@@ -167,22 +184,42 @@
 
     <div class="evidence-block">
       <div class="cap"><span>NPS EVENT 6272 — WI-FI, VALID LOGIN</span><span class="verdict granted">GRANTED</span></div>
-      <div class="shot">[ screenshot: NPS Security log, Event 6272, Account Name: jsmith, Network Policy Name: Cherwood-Foundation-WiFi-Access ]</div>
+      <img src="screenshots/nps-6272-wifi-granted.png" alt="NPS Security log Event 6272, access granted for jsmith">
     </div>
 
     <div class="evidence-block">
       <div class="cap"><span>NPS EVENT 6273 — WI-FI, INVALID LOGIN</span><span class="verdict denied">DENIED</span></div>
-      <div class="shot">[ screenshot: NPS Security log, Event 6273, Reason Code 16, "user credentials mismatch" ]</div>
+      <img src="screenshots/nps-6273-wifi-denied.png" alt="NPS Security log Event 6273, access denied, Reason Code 16">
     </div>
 
     <div class="evidence-block">
       <div class="cap"><span>SSL-VPN — VALID LOGIN, LIVE TUNNEL</span><span class="verdict granted">GRANTED</span></div>
-      <div class="shot">[ screenshot: FortiClient connected, Username: jsmith, real assigned tunnel IP ]</div>
+      <img src="screenshots/forticlient-vpn-connected.png" alt="FortiClient connected, jsmith, live tunnel IP assigned">
     </div>
 
     <div class="evidence-block">
       <div class="cap"><span>GROUP POLICY — ENFORCEMENT PROOF</span><span class="verdict denied">REJECTED</span></div>
-      <div class="shot">[ screenshot: AD password-reset dialog rejecting a sub-10-character password ]</div>
+      <img src="screenshots/gpo-password-rejected.png" alt="Active Directory rejecting a password that does not meet policy requirements">
+    </div>
+
+    <div class="evidence-block">
+      <div class="cap"><span>GPRESULT — GPO CONFIRMED APPLIED</span><span class="verdict granted">CONFIRMED</span></div>
+      <img src="screenshots/gpresult-gpo-applied.png" alt="gpresult output showing Default Domain Policy applied under Computer Settings">
+    </div>
+
+    <div class="evidence-block">
+      <div class="cap"><span>NPS — BOTH NETWORK POLICIES, INDEPENDENTLY SCOPED</span><span class="verdict neutral">CONFIG</span></div>
+      <img src="screenshots/nps-network-policies.png" alt="NPS console showing both the Wi-Fi and VPN network policies enabled">
+    </div>
+
+    <div class="evidence-block">
+      <div class="cap"><span>RADIUS — DIRECT CLI AUTH TEST, BYPASSING THE VPN PORTAL</span><span class="verdict granted">SUCCEEDED</span></div>
+      <img src="screenshots/radius-secret-cli-test.png" alt="FortiGate CLI diagnose test authserver radius command succeeding against NPS">
+    </div>
+
+    <div class="evidence-block">
+      <div class="cap"><span>802.1X — CERTIFICATE TRUST PROMPT MID-HANDSHAKE</span><span class="verdict neutral">CLIENT-SIDE</span></div>
+      <img src="screenshots/ios-cert-trust-prompt.png" alt="iOS certificate trust prompt for the internal Enterprise CA during 802.1X connection">
     </div>
   </section>
 
