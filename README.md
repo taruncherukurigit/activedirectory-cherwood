@@ -1,16 +1,14 @@
-# Cherwood Foundation — Active Directory / 802.1X / SSL-VPN
+# Active Directory, 802.1X and RADIUS Identity Stack (Home Lab)
 
 ![Status](https://img.shields.io/badge/status-live-4a9d78) ![Stack](https://img.shields.io/badge/stack-AD%20%7C%20NPS%2FRADIUS%20%7C%20802.1X%20%7C%20FortiGate-b8933d) ![License](https://img.shields.io/badge/license-view--only-6b655a)
 
-**Client engagement delivered by Cherwood Network Solutions** — Active Directory identity infrastructure, 802.1X wireless authentication, and RADIUS-backed SSL-VPN, built for Cherwood Foundation, a nonprofit client running on a shared Wi-Fi password and unmanaged local VPN accounts.
+**Home lab project** — Active Directory identity infrastructure, 802.1X wireless authentication and RADIUS-backed SSL-VPN, built to replace a shared Wi-Fi password and unmanaged local VPN accounts. The scenario models a small nonprofit, and the domain uses the lab name `foundation.cherwood.local`.
 
 **At a glance:** one AD identity now gates Wi-Fi, VPN, and every domain-joined machine. Two independent client platforms (Cisco AP, FortiGate) authenticate against the same directory over RADIUS. Every claim below is backed by a server-side log screenshot, not a description of what should happen — see [Verification](#verification).
 
-> 🌐 Live project site: [foundation.tarunc.com](https://foundation.tarunc.com)
-> 🔁 GitHub Pages mirror: [taruncherukurigit.github.io/activedirectory-cherwood](https://taruncherukurigit.github.io/activedirectory-cherwood/)
 > 🐛 Full build & troubleshooting log: [`CHERWOOD-FOUNDATION-AD-BUILD-DOC.md`](CHERWOOD-FOUNDATION-AD-BUILD-DOC.md)
-> 💼 Personal portfolio: [tarunc.com](https://tarunc.com)
-> 📦 Delivered by: [Cherwood Network Solutions](https://github.com/taruncherukurigit/network-automation-toolkit) — the internal MSP division of Cherwood Corporation
+> 🌐 Project site: [taruncherukurigit.github.io/activedirectory-cherwood](https://taruncherukurigit.github.io/activedirectory-cherwood/)
+> 💼 Portfolio: [taruncherukurigit.github.io/portfolio-page](https://taruncherukurigit.github.io/portfolio-page/)
 
 ---
 
@@ -18,7 +16,7 @@
 
 A shared Wi-Fi password known to every staff member, and VPN access via local accounts stored directly on the firewall, is exactly what a real, underfunded nonprofit's network typically looks like — no central record of who has access, no way to revoke one person without changing it for everyone, and no audit trail of who authenticated, when, or from where.
 
-This project replaces both with a single Active Directory identity that governs Wi-Fi, VPN, and any future domain-joined machine — the same pattern a real MSP would deliver to a client in this position.
+This project replaces both with a single Active Directory identity that governs Wi-Fi, VPN, and any future domain-joined machine — the same pattern an IT team would deploy for a small organization in this position.
 
 | | Before | After |
 |---|---|---|
@@ -146,10 +144,10 @@ Other issues hit and resolved: a silently-failed DNS role install during DC prom
 
 ## Related projects
 
-- [**Cherwood Network Solutions**](https://github.com/taruncherukurigit/network-automation-toolkit) — the MSP division that delivered this engagement
-- [**Cherwood Health**](https://github.com/taruncherukurigit/cherwood-health) — the segmented enterprise network this MSP also manages
-- [**Cherwood Financial — HA/Failover Lab**](https://github.com/taruncherukurigit/hsrp-failover-lab) — another client engagement in the same portfolio
+- [**Python Network Automation**](https://github.com/taruncherukurigit/network-automation-toolkit) — nightly backup and drift detection across the lab
+- [**Segmented Enterprise Network**](https://github.com/taruncherukurigit/cherwood-health) — the FortiGate and Cisco network this identity stack runs on
+- [**HSRP High-Availability Lab**](https://github.com/taruncherukurigit/hsrp-failover-lab) — first-hop redundancy in the same lab
 
 ---
 
-*A client engagement within the Cherwood Corporation portfolio — built by Tarun Cherukuri alongside CCNA/CWNA study.*
+*Built by Tarun Cherukuri in his home lab alongside CCNA study.*
